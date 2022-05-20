@@ -55,6 +55,12 @@ def simplify(row, pos):
 def GaussElimination(matrix, row, column):
     try:
         for t in range(row):
+            if t == row - 1:
+                if matrix[t][t] != 0 and matrix[t][t] != 1:
+                    matrix[t] = simplify(matrix[t], t)
+                    return matrix, row, column
+                elif matrix[t][t] == 0 or matrix[t][t] == 1:
+                    return matrix, row, column
             while matrix[t][t] == 0:
                 rearrangeMatrix(matrix, row, column, t)
             matrix[t] = simplify(matrix[t], t)
@@ -67,6 +73,22 @@ def GaussElimination(matrix, row, column):
     return matrix, row, column
 
 
+# Function to check special cases
+# Special cases: No solution, Infinite solutions
+def isInSpecialCases(matrix, row, column):
+    for i in range(row):
+        count = 0
+        for j in range(column):
+            if matrix[i][j] == 0:
+                count += 1
+        if count == column - 1:
+            if matrix[i][column - 1] == 0:
+                return "System has no infinite solutions"
+            else:
+                return "System has no solution"
+    return False
+
+
 def main():
     try:
         filename = "data.txt"
@@ -76,6 +98,9 @@ def main():
         matrix, row, column = GaussElimination(matrix, row, column)
         msg = "\nSolved matrix:"
         printMatrix(matrix, row, column, msg)
+        special_case_conclusion = isInSpecialCases(matrix, row, column)
+        if special_case_conclusion != False:
+            print(special_case_conclusion)
         print("RUN CODE SUCCESSFULLY!")
     except:
         print("FAILED TO RUN CODE!")
