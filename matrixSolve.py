@@ -78,32 +78,63 @@ def GaussElimination(matrix, row, column):
 def isInSpecialCases(matrix, row, column):
     for i in range(row):
         count = 0
-        for j in range(column):
+        for j in range(column - 1):
             if matrix[i][j] == 0:
                 count += 1
         if count == column - 1:
             if matrix[i][column - 1] == 0:
-                return "System has no infinite solutions"
+                return "System has infinite solutions"
             else:
                 return "System has no solution"
     return False
 
 
+# Function to do Back Substitution
+def backSubstitution(matrix, row, column):
+    try:
+        n = row
+        x_data = [0] * n
+        x_data[n-1] = matrix[n-1][n] # Gán kết quả x dưới cùng
+        # range(start, stop, step)
+        for i in range(n-2, -1, -1):
+            x_data[i] = matrix[i][n]
+            for j in range(i+1,n):
+                x_data[i] = x_data[i] - matrix[i][j] * x_data[j]
+            x_data[i] = x_data[i] / matrix[i][i]
+        return x_data
+    except:
+        print("Cannot do Back Substitution!")
+
+
+# Function to print result
+def printSolution(matrix, row, column):
+    print("\n--> CONCLUSION: ")
+    special_case_conclusion = isInSpecialCases(matrix, row, column)
+    if special_case_conclusion != False:
+        print(special_case_conclusion)
+    else:
+        x_result = backSubstitution(matrix, row, column)
+        for i in range(row):
+            print("x", end='')
+            print(i + 1, end='')
+            print(" =", x_result[i])
+        
+
+
+# Main function
 def main():
     try:
         filename = "data.txt"
         matrix, row, column = readMatrix(filename)
-        msg = "Original matrix:"
+        msg = "ORIGINAL MATRIX:"
         printMatrix(matrix, row, column, msg)
         matrix, row, column = GaussElimination(matrix, row, column)
-        msg = "\nSolved matrix:"
+        msg = "\n--> SOLVED MATRIX:"
         printMatrix(matrix, row, column, msg)
-        special_case_conclusion = isInSpecialCases(matrix, row, column)
-        if special_case_conclusion != False:
-            print(special_case_conclusion)
-        print("RUN CODE SUCCESSFULLY!")
+        printSolution(matrix, row, column)
+        print("\nRESULT: RUN CODE SUCCESSFULLY!")
     except:
-        print("FAILED TO RUN CODE!")
+        print("\nWARNING: FAILED TO RUN CODE!")
 
 main()
 time.sleep(1000)
